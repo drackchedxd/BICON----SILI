@@ -1,0 +1,65 @@
+//==================================================================================//
+// SERVER 
+//------------------------------------------------------------------------------------
+#include <SPI.h>
+#include <ESP8266WiFi.h>   
+//------------------------------------------------------------------------------------
+char ssid[] = "FVML";                        
+char pass[] = "fvml1234";                    
+WiFiServer server(80);
+
+  IPAddress ip(192, 168, 10, 40);            
+  IPAddress gateway(192, 168, 10, 1);        
+  IPAddress subnet(255, 255, 255, 0);        
+//------------------------------------------------------------------------------------
+#define       LedBoard  2                    
+#define       BUTTON    0                    
+
+//====================================================================================
+void setup() {
+  Serial.begin(115200);                      
+  
+  WiFi.mode(WIFI_AP_STA);                    
+
+  WiFi.softAPConfig(ip, gateway, subnet);
+  WiFi.softAP(ssid, pass);                   
+  delay(500);
+  Serial.print("AP IP address: ");
+  Serial.println(ip);
+  server.begin();                            
+//------------------------------------------------------------------------------------  
+  Serial.println("ESP Server Initialized - FVML");
+  Serial.print("IP:192.168.10.40 ");       Serial.println(WiFi.softAPIP());
+  Serial.print("SSID:fml1234 ");     Serial.println(WiFi.SSID());
+  Serial.print("Signal:On");   Serial.println(WiFi.RSSI());
+
+  pinMode(LedBoard, OUTPUT);                
+  pinMode(BUTTON, INPUT_PULLUP);            
+  digitalWrite(LedBoard, HIGH);             
+}
+
+void loop() {
+  WiFiClient client = server.available();
+  if (!client) {
+    return;
+  }
+  String request = client.readStringUntil('\r');
+  client.flush();
+
+  if (request == "I am Transmitter") {
+    digitalWrite(LedBoard, !digitalRead(LedBoard));
+    Serial.print("Data Received: "); Serial.println(request);
+    delay(200);
+  }
+
+  int reading = digitalRead(BUTTON);
+  if (reading == LOW) {
+    client.print("I am Receiver\r");
+    delay(200);
+  }
+  client.println("Recebendo dados\r");
+  if (BUTTON == 0; BUTTON+1) {
+  client.println('numerodoboi'); client.println("gado0000001");
+  }
+  delay(100);
+}
