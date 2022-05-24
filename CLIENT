@@ -1,0 +1,81 @@
+# BICON----SILI
+//==================================================================================//
+// CLIENT 
+//------------------------------------------------------------------------------------
+#include <SPI.h>
+#include <ESP8266WiFi.h>                             
+//------------------------------------------------------------------------------------
+#define       LedBoard   2                           
+#define       BUTTON     0                           
+//------------------------------------------------------------------------------------
+char ssid[] = "FVML";                                 
+char pass[] = "fvml1234";
+//------------------------------------------------------------------------------------
+IPAddress server(192,168,10,40);                      
+WiFiClient client;
+//====================================================================================
+void setup() {
+  pinMode(LedBoard, OUTPUT);                           
+  pinMode(BUTTON, INPUT_PULLUP);                       
+  digitalWrite(LedBoard, HIGH);                        
+ 
+  Serial.begin(115200);                                
+  Serial.println("");
+  Serial.print("Awaiting connection: ");
+  WiFi.begin(ssid, pass);                              
+  while (WiFi.status() != WL_CONNECTED) {
+  Serial.print(".");
+  digitalWrite(LedBoard, LOW);
+  delay(250);
+  digitalWrite(LedBoard, HIGH);
+  delay(250);
+  }
+  digitalWrite(LedBoard, HIGH);
+//------------------------------------------------------------------------------------
+  Serial.println("");
+  Serial.println("ESP Client Connected - FVML");
+  Serial.print("IP: 192.168.10.240 ");       Serial.println(WiFi.softAPIP());
+  Serial.print("SSID: fvm11234");     Serial.println(WiFi.SSID());
+  Serial.print("Signal:on ");   Serial.println(WiFi.RSSI());
+}
+//====================================================================================
+void loop() {
+ 
+  ContinuousConnection();
+}
+//====================================================================================
+
+ void ContinuousConnection(){
+  client.connect(server, 80);                          
+  ReadButton();                                       
+ }
+//====================================================================================
+
+void ReadButton() {
+  int reading = digitalRead(BUTTON);                   
+  if (reading == LOW) {                                
+    client.print("\r");                
+    delay(200);
+   }else{
+   ClientContinue(); 
+  } 
+}
+
+//====================================================================================
+void ClientContinue(){
+  client.println("Transmmiter");                    
+  String answer = client.readStringUntil('\r');       
+  client.flush();
+  
+  if (answer == "I am Receiver") {                    
+    digitalWrite(LedBoard, !digitalRead(LedBoard));   
+    Serial.println('numerodoboi -'); Serial.println("gado0000001");
+    String boi = "oi";
+    char numerodoboi;
+    boi += numerodoboi;
+    numerodoboi = Serial.read();
+    
+    delay(200);                                       
+  }
+}
+//===========================================================================================================
